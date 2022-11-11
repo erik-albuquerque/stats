@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { GetServerSideProps } from "next";
+import { useEffect } from "react";
 import { octokit } from "../lib/octokit";
 
 type HomeProps = {
@@ -9,6 +11,28 @@ type HomeProps = {
 };
 
 export default function Home(props: HomeProps) {
+  const setInfos = async () => {
+    try {
+      fetch("https://stats-kataik.vercel.app/api/stats")
+    } catch (error) {
+      console.log("error", error)
+      throw error
+    }
+  }
+
+  let setInfosInterval: NodeJS.Timeout
+
+  const TWO_DAYS_IN_SECONDS = 172800 // 2 days 
+
+  useEffect(() => {
+    setInfosInterval = setInterval(async () => {
+      await setInfos()
+    }, TWO_DAYS_IN_SECONDS)
+
+
+    return () => clearInterval(setInfosInterval)
+  }, [])
+
   return (
     <>
       {`
